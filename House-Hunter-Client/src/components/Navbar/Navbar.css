@@ -1,0 +1,16 @@
+.navbar-center a {
+  padding: 8px;
+}
+
+.navbar-center a:hover {
+  background: #ff0f4785;
+  border-radius: 6px;
+  color: white;
+  transition: 0.2s ease-in-out;
+}
+
+.navbar-center a.active {
+  background: #ff0f48;
+  border-radius: 6px;
+  color: white;
+}
