@@ -28,7 +28,7 @@ const Register = () => {
     onSuccess: () => {
       reset();
       queryClient.invalidateQueries("createUser");
-      navigate(location?.state ? location.state : "/");
+      navigate(location?.state ? location.state : "/login");
     },
     onError: (error) => {
       showAlertOnError(error);
