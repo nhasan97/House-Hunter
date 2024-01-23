@@ -4,10 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { uploadImage } from "../../utilities/imageUploader";
 import { saveUserData } from "../../api/authAPIs";
-// import {
-//   showAlertOnSuccess,
-//   showAlertOnError,
-// } from "../../utilities/displaySweetAlert";
+import { showAlertOnError } from "../../utilities/displaySweetAlert";
 
 const Register = () => {
   const {
@@ -29,13 +26,12 @@ const Register = () => {
     mutationKey: ["createUser"],
     mutationFn: saveUserData,
     onSuccess: () => {
-      // showAlertOnSuccess("Inserted successfully!");
       reset();
       queryClient.invalidateQueries("createUser");
       navigate(location?.state ? location.state : "/");
     },
     onError: (error) => {
-      // showAlertOnError(error);
+      showAlertOnError(error);
     },
   });
 
@@ -56,7 +52,7 @@ const Register = () => {
 
       mutation.mutate(user);
     } catch (err) {
-      // showAlertOnError(err.message);
+      showAlertOnError(err.message);
     }
   };
 
