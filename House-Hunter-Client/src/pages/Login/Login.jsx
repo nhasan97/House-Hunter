@@ -30,7 +30,7 @@ const Login = () => {
             </h1>
 
             <div className="relative">
-              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
                 <i className="fa-solid fa-envelope text-xl text-white"></i>
               </div>
               <input
@@ -39,12 +39,12 @@ const Login = () => {
                 {...register("email")}
                 placeholder="Email"
                 required
-                className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
               />
             </div>
 
             <div className="relative">
-              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
                 <i className="fa-solid fa-key text-xl text-white"></i>
               </div>
 
@@ -54,7 +54,7 @@ const Login = () => {
                 {...register("pass")}
                 placeholder="Password"
                 required
-                className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
               />
               <span
                 className=" text-base absolute right-4 translate-y-[50%]"
@@ -71,7 +71,7 @@ const Login = () => {
             <input
               type="submit"
               value="Sign In"
-              className="btn w-1/2 mx-auto bg-[#FE7E51] text-lg font-medium text-white hover:text-[#FE7E51] normal-case rounded-lg"
+              className="btn w-1/2 mx-auto bg-[#ff0f48] text-lg font-medium text-white hover:text-[#ff0f48] normal-case rounded-lg"
             />
           </form>
 

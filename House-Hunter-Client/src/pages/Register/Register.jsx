@@ -1,6 +1,9 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { uploadImage } from "../../utilities/imageUploader";
+import { saveUserData } from "../../api/authAPIs";
 // import {
 //   showAlertOnSuccess,
 //   showAlertOnError,
@@ -14,15 +17,47 @@ const Register = () => {
     reset,
   } = useForm();
   const [showPass, setShowPass] = useState(false);
+  const roles = ["House Owner", "House Renter"];
 
   const navigate = useNavigate();
 
   //==================== Register Using Email and Password ====================
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["createUser"],
+    mutationFn: saveUserData,
+    onSuccess: () => {
+      // showAlertOnSuccess("Inserted successfully!");
+      reset();
+      queryClient.invalidateQueries("createUser");
+      navigate(location?.state ? location.state : "/");
+    },
+    onError: (error) => {
+      // showAlertOnError(error);
+    },
+  });
+
   const onSubmit = async (data) => {
-    // try {
-    // } catch (err) {
-    //   showAlertOnError(err.message);
-    // }
+    console.log(data);
+
+    const imageData = await uploadImage(data.photo[0]);
+
+    try {
+      const user = {
+        name: data.name,
+        role: data.role,
+        phone: data.phone,
+        email: data.email,
+        password: data.pass,
+        profileImage: imageData?.data?.display_url,
+      };
+
+      mutation.mutate(user);
+    } catch (err) {
+      // showAlertOnError(err.message);
+    }
   };
 
   return (
@@ -38,7 +73,7 @@ const Register = () => {
             </h1>
 
             <div className="relative">
-              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
                 <i className="fa-solid fa-signature text-xl text-white"></i>
               </div>
               <input
@@ -46,7 +81,7 @@ const Register = () => {
                 type="text"
                 {...register("name", { required: true })}
                 placeholder="Name"
-                className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
               />
               {errors.name?.type === "required" && (
                 <p className="text-red-500">Name is required</p>
@@ -54,7 +89,57 @@ const Register = () => {
             </div>
 
             <div className="relative">
-              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
+                <i className="fa-solid fa-user text-xl text-white"></i>
+              </div>
+              <select
+                type="text"
+                {...register("role")}
+                placeholder="Role"
+                required
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
+              >
+                {roles.map((role) => (
+                  <option key={role}>{role}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="relative">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
+                <i className="fa-solid fa-phone text-xl text-white"></i>
+              </div>
+              <input
+                id="in1"
+                type="text"
+                {...register("phone", {
+                  required: true,
+                  maxLength: 11,
+                  pattern: /(?=.*[0-9])/,
+                })}
+                placeholder="Cell"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
+              />
+              {errors.phone?.type === "required" && (
+                <p className="text-red-500">Phone number is required</p>
+              )}
+              {errors.phone?.type === "maxLength" && (
+                <p className="text-red-500">
+                  Phone number has to be 11 digits long
+                </p>
+              )}
+              {errors.phone?.type === "minLength" && (
+                <p className="text-red-500">
+                  Phone number has to be 11 digits long
+                </p>
+              )}
+              {errors.phone?.type === "pattern" && (
+                <p className="text-red-500">Only numbers are allowed</p>
+              )}
+            </div>
+
+            <div className="relative">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
                 <i className="fa-solid fa-envelope text-xl text-white"></i>
               </div>
               <input
@@ -62,7 +147,7 @@ const Register = () => {
                 type="email"
                 {...register("email", { required: true })}
                 placeholder="Email"
-                className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
               />
               {errors.email?.type === "required" && (
                 <p className="text-red-500">Email is required</p>
@@ -70,7 +155,7 @@ const Register = () => {
             </div>
 
             <div className="relative">
-              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+              <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#FE7E51] rounded-lg">
                 <i className="fa-solid fa-key text-xl text-white"></i>
               </div>
               <input
@@ -83,7 +168,7 @@ const Register = () => {
                   pattern: /(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])/,
                 })}
                 placeholder="Password"
-                className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                className="input bg-[#fe7f5121] w-full pl-16 rounded-lg border focus:border-[#FE7E51] focus:outline-none"
               />
               <span
                 className=" text-base absolute right-4 translate-y-[50%]"
@@ -132,7 +217,7 @@ const Register = () => {
             <input
               type="submit"
               value="Sign Up"
-              className="btn w-1/2 mx-auto bg-[#FE7E51] text-lg font-medium text-white hover:text-[#FE7E51] normal-case rounded-lg"
+              className="btn w-1/2 mx-auto bg-[#ff0f48] text-lg font-medium text-white hover:text-[#ff0f48] normal-case rounded-lg"
             />
           </form>
 
