@@ -18,12 +18,15 @@ export const saveUserData = async (user) => {
 
 export const loginUser = async (user) => {
   const { data } = await axiosSecure.post(`/login`, user);
-  console.log(data);
 
   if (data.error === true) {
     showAlertOnError(data.message);
   } else {
-    showAlertOnSuccess("Logged in successfully!");
+    axiosSecure.post("/jwt", data).then((res) => {
+      if (res.data === true) {
+        showAlertOnSuccess("Logged in successfully!");
+      }
+    });
   }
   return data;
 };
