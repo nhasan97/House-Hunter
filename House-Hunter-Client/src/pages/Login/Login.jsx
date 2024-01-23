@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-// import {
-//   showAlertOnError,
-//   showAlertOnSuccess,
-// } from "../../utilities/displaySweetAlert";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { showAlertOnError } from "../../utilities/displaySweetAlert";
+import { loginUser } from "../../api/authAPIs";
 
 const Login = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const [showPass, setShowPass] = useState(false);
 
   const navigate = useNavigate();
@@ -15,7 +14,33 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/";
 
   //==================== Login Using Email and Password ====================
-  const onSubmit = (data) => {};
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["loginUser"],
+    mutationFn: loginUser,
+    onSuccess: () => {
+      reset();
+      queryClient.invalidateQueries("loginUser");
+      navigate(from, { replace: true });
+    },
+    onError: (error) => {
+      showAlertOnError(error);
+    },
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      const user = {
+        email: data.email,
+        password: data.pass,
+      };
+
+      mutation.mutate(user);
+    } catch (err) {
+      showAlertOnError(err.message);
+    }
+  };
 
   return (
     <div className="w-full h-screen flex justify-center items-center bg-[url('src/assets/others/authentication.png')]">
