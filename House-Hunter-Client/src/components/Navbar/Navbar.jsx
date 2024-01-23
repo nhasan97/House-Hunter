@@ -2,7 +2,7 @@ import "./Navbar.css";
 import { Link, NavLink } from "react-router-dom";
 import { AiOutlineLogin, AiOutlineLogout } from "react-icons/ai";
 // import { showAlertOnError } from "../../utilities/displaySweetAlert";
-import MainLogo from "../shared/mainLogo";
+import MainLogo from "../shared/MainLogo";
 import Container from "../shared/Container";
 
 const Navbar = () => {
@@ -11,10 +11,7 @@ const Navbar = () => {
   const links = (
     <div className="text-[#757575] text-base font-medium space-x-8">
       <NavLink to="/">Home</NavLink>
-      <NavLink to="/surveys">Surveys</NavLink>
-
-      <NavLink to="/about">About Us</NavLink>
-      <NavLink to="/contact">Contact</NavLink>
+      <NavLink to="/surveys">Dashboard</NavLink>
     </div>
   );
 
