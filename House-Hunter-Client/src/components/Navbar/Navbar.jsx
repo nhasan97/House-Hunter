@@ -16,9 +16,9 @@ const Navbar = () => {
       {loading ? (
         <span className="loading loading-dots loading-xs"></span>
       ) : user?.role === "House Owner" ? (
-        <NavLink to="/dashboard/manage-surveys">Dashboard</NavLink>
+        <NavLink to="/dashboard/display-houses">Dashboard</NavLink>
       ) : user?.role === "House Renter" ? (
-        <NavLink to="/dashboard/display-surveys">Dashboard</NavLink>
+        <NavLink to="/dashboard/display-bookings">Dashboard</NavLink>
       ) : (
         ""
       )}
