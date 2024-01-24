@@ -8,6 +8,7 @@ const port = 5000 || process.env.PORT;
 
 const usersRoutes = require("./src/routes/users/index");
 const authenticationRoutes = require("./src/routes/authentication/index");
+const houseRoutes = require("./src/routes/houses/index");
 
 const globalErrorHandler = require("./src/middleWares/globalErrorHandler");
 
@@ -15,6 +16,7 @@ applyMiddleware(app);
 
 app.use(usersRoutes);
 app.use(authenticationRoutes);
+app.use(houseRoutes);
 
 app.get("/", (req, res) => {
   res.send("server started");
