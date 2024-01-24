@@ -10,6 +10,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import RenterRoute from "./RenterRoute";
 import OwnerRoute from "./OwnerRoute";
 import DisplayHouses from "../pages/Dashboard/DisplayHouses";
+import RenterBookings from "../pages/Dashboard/RenterBookings";
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,9 @@ const router = createBrowserRouter([
         path: "display-houses",
         element: (
           <PrivateRoute>
-            <OwnerRoute>{/* <DisplayHouses></DisplayHouses> */}</OwnerRoute>
+            <OwnerRoute>
+              <DisplayHouses></DisplayHouses>
+            </OwnerRoute>
           </PrivateRoute>
         ),
       },
@@ -45,7 +48,9 @@ const router = createBrowserRouter([
         path: "display-bookings",
         element: (
           <PrivateRoute>
-            <RenterRoute>{/* <DisplaySurveys></DisplaySurveys> */}</RenterRoute>
+            <RenterRoute>
+              <RenterBookings></RenterBookings>
+            </RenterRoute>
           </PrivateRoute>
         ),
       },

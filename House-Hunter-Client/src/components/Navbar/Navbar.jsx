@@ -31,7 +31,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full h-fit py-2 bg-[rgba(255,255,255,.5)] absolute z-10">
+    <div className="w-full h-fit py-2 bg-[rgba(255,255,255,0.83)] absolute z-10">
       <Container>
         <div className="navbar  text-[#101322]">
           <div className="navbar-start">

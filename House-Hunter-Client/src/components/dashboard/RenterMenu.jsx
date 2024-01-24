@@ -5,8 +5,8 @@ const RenterMenu = () => {
   return (
     <div className="sb flex flex-col justify-center items-start mx-auto">
       <SIdebarMenuItem
-        icon={<i className="fa-solid fa-square-poll-vertical"></i>}
-        menuText="Surveys"
+        icon={<i className="fa-solid fa-key"></i>}
+        menuText="Bookings"
         route="/dashboard/display-bookings"
       ></SIdebarMenuItem>
 

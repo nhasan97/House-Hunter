@@ -1,9 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  deleteSurveyData,
-  getUserBasedSurveyData,
-  updateSurveyData,
-} from "../../api/houseAPIs";
 import { Helmet } from "react-helmet-async";
 import timeStampToDateConverter from "../../utilities/timeStampToDateConverter";
 import useAuth from "../../hooks/useAuth";
@@ -14,11 +9,14 @@ import dateComparer from "../../utilities/dateComparer";
 import { showAlertOnError } from "../../utilities/displaySweetAlert";
 import usePerformMutation from "../../hooks/usePerformMutation";
 import Title from "../../components/shared/Title";
-import { Link } from "react-router-dom";
 import NoData from "../../components/shared/NoData";
+import { getUserBasedHouseData } from "../../api/houseAPIs";
+import { useForm } from "react-hook-form";
+import { MdDescription } from "react-icons/md";
 
 const DisplayHouses = () => {
   const { user, loading } = useAuth();
+  const { register, handleSubmit, reset } = useForm();
 
   const today = useCurrentDate();
 
@@ -39,29 +37,60 @@ const DisplayHouses = () => {
 
   //setting the title
   const title = {
-    mainTitle: "Your Surveys",
+    mainTitle: "Your Houses",
     subTitle: "",
   };
 
-  //fetching surveyor based survey data
+  //fetching owner based house data
   const {
     isLoading,
-    data: surveys,
+    data: houses,
     refetch,
   } = useQuery({
-    queryKey: ["getUserSurveyData"],
-    queryFn: () => getUserBasedSurveyData(user?.email),
+    queryKey: ["getUserHouseData"],
+    queryFn: () => getUserBasedHouseData(user?.email),
   });
 
-  //performing mutation for updating survey data
+  //performing mutation for updating house data
+
+  const mutation = usePerformMutation(
+    "addHouse",
+    // addHouseData,
+    "Added successfully!"
+  );
+
+  const onSubmit = async (data) => {
+    const dateValidity = dateComparer(today, data.deadline);
+
+    if (dateValidity === "invalid") {
+      showAlertOnError("Please enter a valid date!");
+    } else {
+      if (user.email) {
+        const survey = {
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          deadline: data.deadline,
+          status: "unpublished",
+          email: user?.email,
+        };
+
+        mutation.mutate(survey);
+        refetch();
+        reset();
+      } else return;
+    }
+  };
+
+  //performing mutation for updating house data
   const mutation1 = usePerformMutation(
-    "updateSurvey",
-    updateSurveyData,
+    "updateHouse",
+    // updateHouseData,
     "Updated successfully!"
   );
 
   //update button handler
-  const handleUpdateSurvey = (e) => {
+  const handleUpdateHouse = (e) => {
     e.preventDefault();
 
     const form = e.target;
@@ -77,23 +106,23 @@ const DisplayHouses = () => {
     if (defaultDeadline !== deadline && dateValidity === "invalid") {
       showAlertOnError("Please enter a valid date!");
     } else {
-      const updatedSurvey = {
+      const updatedHouse = {
         title,
         description,
         category,
         deadline,
       };
 
-      mutation1.mutate({ _id, updatedSurvey });
+      mutation1.mutate({ _id, updatedHouse });
       refetch();
       form.reset();
     }
   };
 
-  //performing mutation for deleting survey data
+  //performing mutation for deleting house data
   const mutation2 = usePerformMutation(
-    "deleteSurvey",
-    deleteSurveyData,
+    "deleteHouse",
+    // deleteHouseData,
     "Deleted successfully!"
   );
 
@@ -107,51 +136,151 @@ const DisplayHouses = () => {
     return <Loading />;
   }
 
-  if (surveys.length > 0) {
+  if (houses.length > 0) {
     return (
       <DashboardContainer>
         <Helmet>
-          <title>PanaPoll | Dashboard | Surveys</title>
+          <title>House Hunter | Dashboard | Houses</title>
         </Helmet>
 
         <Title title={title}></Title>
 
         <div className="w-[90%] overflow-y-auto h-[400px] rounded-lg">
+          <button
+            className="btn mb-3"
+            onClick={() => document.getElementById("add-house").showModal()}
+          >
+            Add New House
+          </button>
+
+          <dialog id={"add-house"} className="modal">
+            <div className="modal-box">
+              <form method="dialog">
+                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                  ✕
+                </button>
+              </form>
+              <div className="p-5">
+                <form
+                  className="w-full flex flex-col gap-4 text-left"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <div className="relative">
+                    <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+                      <i className="fa-solid fa-t text-xl text-white"></i>
+                    </div>
+                    <input
+                      type="text"
+                      {...register("title")}
+                      placeholder="Title"
+                      required
+                      className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <div className="h-20 w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+                      <MdDescription className="text-2xl text-white" />
+                    </div>
+                    <textarea
+                      type="email"
+                      {...register("description")}
+                      placeholder="Description"
+                      required
+                      className="input bg-[#a1dada41] w-full h-20 pl-16 py-3 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+                      <i className="fa-solid fa-d text-xl text-white"></i>
+                    </div>
+                    <select
+                      type="text"
+                      {...register("category")}
+                      placeholder="Category"
+                      required
+                      className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                    >
+                      {categories.map((category) => (
+                        <option key={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="relative">
+                    <div className="h-[48px] w-[48px] flex justify-center items-center absolute top-0 left-0 bg-[#95D0D4] rounded-lg">
+                      <i className="fa-regular fa-calendar-days text-xl text-white"></i>
+                    </div>
+                    <input
+                      type="date"
+                      id="in4"
+                      {...register("deadline")}
+                      placeholder="Deadline"
+                      required
+                      className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
+                    />
+                  </div>
+
+                  <input
+                    type="submit"
+                    value="Create"
+                    className="btn w-1/2 mx-auto bg-[#FE7E51] text-lg font-medium text-white hover:text-[#FE7E51] normal-case rounded-lg"
+                  />
+                </form>
+              </div>
+            </div>
+          </dialog>
+
           <table className="w-full table table-zebra rounded-lg text-base text-center">
             {/* head */}
-            <thead className=" bg-[#71357B] text-base text-white font-normal text-center">
+            <thead className=" bg-[#FF0F48] text-base text-white font-normal text-center">
               <tr>
-                <th>Title</th>
-                <th>Details</th>
-                <th>Status</th>
+                <th>name</th>
+                <th>picture</th>
+                <th>details</th>
+                <th>address</th>
+                <th>rent/month</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {/* row  */}
-              {surveys.map((survey) => (
-                <tr key={survey._id}>
-                  <th className="text-[#71357B] text-left">{survey.title}</th>
+              {houses.map((house) => (
+                <tr key={house._id}>
+                  <th className="text-[#FF0F48] text-left">
+                    {house.house_name}
+                  </th>
+
+                  <td>{house.picture}</td>
+
                   <td>
                     <button
-                      className="btn btn-circle hover:bg-[#71357B] group"
+                      className="btn btn-circle hover:bg-[#FF0F48] group"
                       onClick={() =>
-                        document.getElementById(survey._id).showModal()
+                        document.getElementById(house._id).showModal()
                       }
                     >
                       <i className="fa-solid fa-circle-info group-hover:text-white"></i>
                     </button>
 
-                    <dialog id={survey._id} className="modal">
+                    <dialog id={house._id} className="modal">
                       <div className="modal-box text-left">
-                        <h3 className="font-bold text-lg">{survey.title}</h3>
-                        <p className="py-4 badge">{survey.category}</p>
-                        <p className="py-4">{survey.description}</p>
+                        <h3 className="font-bold text-lg">
+                          {house.house_name}
+                        </h3>
+
+                        <p className="py-4">{house.description}</p>
+                        <p className="py-4">Bedrooms: {house.num_bedrooms}</p>
+                        <p className="py-4">Washrooms: {house.num_bathrooms}</p>
+                        <p className="py-4">Room Size: {house.room_size}</p>
                         <p className="py-4">
-                          Created On:
-                          {timeStampToDateConverter(parseInt(survey.timeStamp))}
+                          Available On:
+                          {timeStampToDateConverter(
+                            parseInt(house.availability_date)
+                          )}
                         </p>
-                        <p className="py-4">Deadline: {survey.deadline}</p>
+
                         <div className="modal-action">
                           <form method="dialog">
                             <button className="btn">Close</button>
@@ -160,18 +289,24 @@ const DisplayHouses = () => {
                       </div>
                     </dialog>
                   </td>
-                  <td>{survey.status}</td>
+
+                  <td>
+                    {house.address}, {house.city}
+                  </td>
+
+                  <td>{house.rent_per_month} /-</td>
+
                   <td className="flex justify-center gap-3">
                     <button
                       className="btn hover:bg-emerald-500 group"
                       onClick={() =>
-                        document.getElementById("u" + survey._id).showModal()
+                        document.getElementById("u" + house._id).showModal()
                       }
                     >
                       <i className="fa-solid fa-pen-to-square group-hover:text-white"></i>
                     </button>
 
-                    <dialog id={"u" + survey._id} className="modal">
+                    <dialog id={"u" + house._id} className="modal">
                       <div className="modal-box">
                         <form method="dialog">
                           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
@@ -181,14 +316,14 @@ const DisplayHouses = () => {
                         <div className="p-5">
                           <form
                             className="w-full flex flex-col gap-4 text-left"
-                            onSubmit={handleUpdateSurvey}
+                            onSubmit={handleUpdateHouse}
                           >
                             <input
                               type="text"
                               name="_id"
                               required
                               hidden
-                              defaultValue={survey._id}
+                              defaultValue={house._id}
                             />
 
                             <input
@@ -196,7 +331,7 @@ const DisplayHouses = () => {
                               name="hiddenDeadline"
                               required
                               hidden
-                              defaultValue={survey.deadline}
+                              defaultValue={house.deadline}
                             />
 
                             <input
@@ -204,7 +339,7 @@ const DisplayHouses = () => {
                               name="status"
                               required
                               hidden
-                              defaultValue={survey.status}
+                              defaultValue={house.status}
                             />
 
                             <div className="relative">
@@ -216,7 +351,7 @@ const DisplayHouses = () => {
                                 name="title"
                                 placeholder="Title"
                                 required
-                                defaultValue={survey.title}
+                                defaultValue={house.title}
                                 className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
                               />
                             </div>
@@ -230,7 +365,7 @@ const DisplayHouses = () => {
                                 name="description"
                                 placeholder="Description"
                                 required
-                                defaultValue={survey.description}
+                                defaultValue={house.description}
                                 className="input bg-[#a1dada41] w-full h-20 pl-16 py-3 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
                               />
                             </div>
@@ -262,7 +397,7 @@ const DisplayHouses = () => {
                                 name="deadline"
                                 placeholder="Deadline"
                                 required
-                                defaultValue={survey.deadline}
+                                defaultValue={house.deadline}
                                 className="input bg-[#a1dada41] w-full pl-16 rounded-lg border focus:border-[#7DDDD9] focus:outline-none"
                               />
                             </div>
@@ -279,24 +414,10 @@ const DisplayHouses = () => {
 
                     <button
                       className="btn hover:bg-red-500 group"
-                      onClick={() => handleDelete(survey._id)}
+                      onClick={() => handleDelete(house._id)}
                     >
                       <i className="fa-solid fa-trash group-hover:text-white "></i>
                     </button>
-
-                    <Link
-                      to={`/dashboard/survey-comments/${survey._id}`}
-                      className="btn hover:bg-[#FE7E51] group"
-                    >
-                      <i className="fa-solid fa-comment group-hover:text-white"></i>
-                    </Link>
-
-                    <Link
-                      to={`/dashboard/survey-response/${survey._id}`}
-                      className="btn group hover:bg-[#101322] hover:text-white"
-                    >
-                      Responses
-                    </Link>
                   </td>
                 </tr>
               ))}
