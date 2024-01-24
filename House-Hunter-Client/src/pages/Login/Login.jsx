@@ -3,12 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { showAlertOnError } from "../../utilities/displaySweetAlert";
-import { loginUser } from "../../api/authAPIs";
+// import { loginUser } from "../../api/authAPIs";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
   const { register, handleSubmit, reset } = useForm();
   const [showPass, setShowPass] = useState(false);
-
+  const { loginUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";

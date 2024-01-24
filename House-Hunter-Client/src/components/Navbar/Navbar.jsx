@@ -4,18 +4,31 @@ import { AiOutlineLogin, AiOutlineLogout } from "react-icons/ai";
 // import { showAlertOnError } from "../../utilities/displaySweetAlert";
 import MainLogo from "../shared/MainLogo";
 import Container from "../shared/Container";
+import useAuth from "../../hooks/useAuth";
+import axiosSecure from "../../api/axiosSecure";
 
 const Navbar = () => {
-  const user = null;
+  const { user, loading } = useAuth();
 
   const links = (
     <div className="text-[#757575] text-base font-medium space-x-8">
       <NavLink to="/">Home</NavLink>
-      <NavLink to="/surveys">Dashboard</NavLink>
+      {loading ? (
+        <span className="loading loading-dots loading-xs"></span>
+      ) : user?.role === "House Owner" ? (
+        <NavLink to="/dashboard/manage-surveys">Dashboard</NavLink>
+      ) : user?.role === "House Renter" ? (
+        <NavLink to="/dashboard/display-surveys">Dashboard</NavLink>
+      ) : (
+        ""
+      )}
     </div>
   );
 
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    axiosSecure.post("/logout", user).then((res) => console.log(res.data));
+    // setLoading(false);
+  };
 
   return (
     <div className="w-full h-fit py-2 bg-[rgba(255,255,255,.5)] absolute z-10">
@@ -57,12 +70,12 @@ const Navbar = () => {
               <div className="flex justify-center items-center gap-2">
                 <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                   <div className="w-10 rounded-full">
-                    {/* <img src={user.photoURL} /> */}
+                    <img src={user?.profileImage} />
                   </div>
                 </label>
-                {/* <p className="border-l-2 p-2 text-lg">{user.displayName}</p> */}
+                <p className="border-l-2 p-2 text-lg">{user?.name}</p>
                 <button
-                  className="btn btn-circle border-none bg-[#95D0D4] text-white hover:text-[#323484]"
+                  className="btn btn-circle border-none bg-[#101322] text-white hover:text-[#323484]"
                   onClick={handleLogout}
                 >
                   <AiOutlineLogout className="text-2xl"></AiOutlineLogout>

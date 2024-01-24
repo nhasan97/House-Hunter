@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { uploadImage } from "../../utilities/imageUploader";
-import { saveUserData } from "../../api/authAPIs";
+// import { saveUserData } from "../../api/authAPIs";
 import { showAlertOnError } from "../../utilities/displaySweetAlert";
+import useAuth from "../../hooks/useAuth";
 
 const Register = () => {
   const {
@@ -15,7 +16,7 @@ const Register = () => {
   } = useForm();
   const [showPass, setShowPass] = useState(false);
   const roles = ["House Owner", "House Renter"];
-
+  const { saveUserData } = useAuth();
   const navigate = useNavigate();
 
   //==================== Register Using Email and Password ====================
